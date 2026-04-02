@@ -28,9 +28,9 @@ const STATUS_META: Record<
   },
   processing: {
     label: "Processing",
-    badgeClassName: "border-mint/18 bg-forest-dark text-theme-body",
+    badgeClassName: "border-mint/18 bg-forest-dark text-white/75",
     cardClassName: "theme-card-soft",
-    selectClassName: "border-mint/18 bg-forest-dark text-theme-body",
+    selectClassName: "border-mint/18 bg-forest-dark text-white/75",
   },
   delivered: {
     label: "Delivered",
@@ -161,7 +161,7 @@ const AdminDashboardPage = () => {
             className={`flex items-center gap-2 px-6 py-4 font-bold text-base transition-colors ${
               activeTab === "orders"
                 ? "border-b-2 border-gold text-theme-heading"
-                : "text-theme-body hover:text-theme-heading"
+                : "text-white/75 hover:text-theme-heading"
             }`}
           >
             <ShoppingCart className="h-5 w-5" />
@@ -172,7 +172,7 @@ const AdminDashboardPage = () => {
             className={`flex items-center gap-2 px-6 py-4 font-bold text-base transition-colors ${
               activeTab === "stock"
                 ? "border-b-2 border-gold text-theme-heading"
-                : "text-theme-body hover:text-theme-heading"
+                : "text-white/75 hover:text-theme-heading"
             }`}
           >
             <Package className="h-5 w-5" />
@@ -195,7 +195,7 @@ const AdminDashboardPage = () => {
               <h1 className="mt-4 font-heading text-5xl font-semibold md:text-6xl">
                 Real order management
               </h1>
-              <p className="text-theme-body mt-4 text-lg leading-8">
+              <p className="text-white/85 mt-4 text-lg leading-8">
                 Review customer orders, update delivery progress, and open each row to inspect the
                 full item list before dispatch.
               </p>
@@ -209,7 +209,7 @@ const AdminDashboardPage = () => {
                 type="button"
                 onClick={() => refetch()}
                 disabled={isLoading || isRefetching}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-mint/18 bg-forest-dark px-5 py-3 text-sm font-semibold text-theme-body transition hover:bg-gold/10 hover:text-theme-heading disabled:cursor-not-allowed disabled:opacity-70"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-mint/18 bg-forest-dark px-5 py-3 text-sm font-semibold text-white/80 transition hover:bg-gold/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-70"
               >
                 <RefreshCw className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`} />
                 Refresh
@@ -217,7 +217,7 @@ const AdminDashboardPage = () => {
               <button
                 type="button"
                 onClick={logoutAdmin}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-mint/18 bg-forest-dark px-5 py-3 text-sm font-semibold text-theme-body transition hover:bg-gold/10 hover:text-theme-heading"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-mint/18 bg-forest-dark px-5 py-3 text-sm font-semibold text-white/80 transition hover:bg-gold/10 hover:text-white"
               >
                 <LogOut className="h-4 w-4" />
                 Logout
@@ -255,7 +255,7 @@ const AdminDashboardPage = () => {
                 >
                   {metrics.totalOrders}
                 </motion.p>
-                <p className="text-theme-body mt-3 text-sm leading-6">
+                <p className="text-white/75 mt-3 text-sm leading-6">
                   Total revenue: <span className="font-semibold text-gold">{formatCurrency(metrics.revenue)}</span>
                 </p>
               </div>
@@ -290,7 +290,7 @@ const AdminDashboardPage = () => {
                 >
                   {metrics.counts.pending}
                 </motion.p>
-                <p className="text-theme-body mt-3 text-sm leading-6">
+                <p className="text-white/75 mt-3 text-sm leading-6">
                   Fresh orders waiting for action
                 </p>
               </div>
@@ -325,7 +325,7 @@ const AdminDashboardPage = () => {
                 >
                   {metrics.counts.processing}
                 </motion.p>
-                <p className="text-theme-body mt-3 text-sm leading-6">
+                <p className="text-white/75 mt-3 text-sm leading-6">
                   Orders being prepared now
                 </p>
               </div>
@@ -360,7 +360,7 @@ const AdminDashboardPage = () => {
                 >
                   {metrics.counts.delivered}
                 </motion.p>
-                <p className="text-theme-body mt-3 text-sm leading-6">
+                <p className="text-white/75 mt-3 text-sm leading-6">
                   Successfully completed
                 </p>
               </div>
@@ -374,13 +374,13 @@ const AdminDashboardPage = () => {
               <p className="text-theme-heading text-sm font-semibold uppercase tracking-[0.24em]">
                 Filters
               </p>
-              <p className="text-theme-body mt-2 text-sm leading-7">
+              <p className="text-white/75 mt-2 text-sm leading-7">
                 Search by phone number or order ID, then click any row to view the full items list.
               </p>
             </div>
 
             <div className="relative w-full lg:max-w-md">
-              <Search className="text-theme-body-soft pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2" />
+              <Search className="text-white/50 pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2" />
               <input
                 type="search"
                 value={searchQuery}
@@ -398,7 +398,7 @@ const AdminDashboardPage = () => {
               className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
                 statusFilter === "all"
                   ? "border-gold bg-gold text-theme-on-accent"
-                  : "border-mint/18 bg-forest-dark text-theme-body hover:bg-gold/10"
+                  : "border-mint/18 bg-forest-dark text-white/75 hover:bg-gold/10 hover:text-white/90"
               }`}
             >
               All ({orders.length})
@@ -410,8 +410,8 @@ const AdminDashboardPage = () => {
                 onClick={() => setStatusFilter(status)}
                 className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
                   statusFilter === status
-                    ? "border-mint/18 bg-forest-medium text-theme-contrast"
-                    : "border-mint/18 bg-forest-dark text-theme-body hover:bg-gold/10"
+                    ? "border-mint/18 bg-forest-medium text-white font-bold"
+                    : "border-mint/18 bg-forest-dark text-white/75 hover:bg-gold/10 hover:text-white/90"
                 }`}
               >
                 {STATUS_META[status].label} ({metrics.counts[status]})
@@ -419,7 +419,7 @@ const AdminDashboardPage = () => {
             ))}
           </div>
 
-          <div className="text-theme-body mt-4 text-sm">
+          <div className="text-white/70 mt-4 text-sm font-medium">
             Showing {filteredOrders.length} of {orders.length} orders
           </div>
         </div>
@@ -435,25 +435,25 @@ const AdminDashboardPage = () => {
             <table className="min-w-[1100px] w-full border-collapse">
               <thead className="theme-card-soft">
                 <tr className="text-left">
-                  <th className="text-theme-body-soft px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em]">
+                  <th className="text-white/70 px-6 py-4 text-xs font-bold uppercase tracking-[0.22em]">
                     Order ID
                   </th>
-                  <th className="text-theme-body-soft px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em]">
+                  <th className="text-white/70 px-6 py-4 text-xs font-bold uppercase tracking-[0.22em]">
                     Customer Name
                   </th>
-                  <th className="text-theme-body-soft px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em]">
+                  <th className="text-white/70 px-6 py-4 text-xs font-bold uppercase tracking-[0.22em]">
                     Phone
                   </th>
-                  <th className="text-theme-body-soft px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em]">
+                  <th className="text-white/70 px-6 py-4 text-xs font-bold uppercase tracking-[0.22em]">
                     Address
                   </th>
-                  <th className="text-theme-body-soft px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em]">
+                  <th className="text-white/70 px-6 py-4 text-xs font-bold uppercase tracking-[0.22em]">
                     Total
                   </th>
-                  <th className="text-theme-body-soft px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em]">
+                  <th className="text-white/70 px-6 py-4 text-xs font-bold uppercase tracking-[0.22em]">
                     Date &amp; Time
                   </th>
-                  <th className="text-theme-body-soft px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em]">
+                  <th className="text-white/70 px-6 py-4 text-xs font-bold uppercase tracking-[0.22em]">
                     Status
                   </th>
                 </tr>
@@ -484,7 +484,7 @@ const AdminDashboardPage = () => {
                     <td colSpan={7} className="px-6 py-14 text-center">
                       <div className="theme-card-soft mx-auto max-w-xl rounded-2xl border border-dashed px-6 py-8">
                         <p className="text-theme-heading text-lg font-semibold">No matching orders</p>
-                        <p className="text-theme-body mt-2 text-sm leading-7">
+                        <p className="text-white/75 mt-2 text-sm leading-7">
                           Adjust the status filter or search text to see more results.
                         </p>
                       </div>
@@ -514,7 +514,7 @@ const AdminDashboardPage = () => {
                               </span>
                               <div>
                                 <p className="text-theme-strong font-semibold">{order.id}</p>
-                                <p className="text-theme-body mt-1 text-sm">
+                                <p className="text-white/75 mt-1 text-sm">
                                   {order.items.length} {order.items.length === 1 ? "item" : "items"}
                                 </p>
                               </div>
@@ -527,14 +527,14 @@ const AdminDashboardPage = () => {
                             {order.customer.phone}
                           </td>
                           <td className="px-6 py-5">
-                            <p className="text-theme-body max-w-[320px] text-sm leading-6">
+                            <p className="text-white/75 max-w-[320px] text-sm leading-6">
                               {formatAddress(order)}
                             </p>
                           </td>
                           <td className="text-theme-heading px-6 py-5 text-sm font-semibold">
                             {formatCurrency(order.total)}
                           </td>
-                          <td className="text-theme-body px-6 py-5 text-sm">
+                          <td className="text-white/70 px-6 py-5 text-sm">
                             {formatDateTime(order.createdAt)}
                           </td>
                           <td className="px-6 py-5">
@@ -586,12 +586,12 @@ const AdminDashboardPage = () => {
                                       >
                                         <div>
                                           <p className="text-theme-strong font-semibold">{item.name}</p>
-                                          <p className="text-theme-body mt-1 text-sm">
+                                          <p className="text-white/75 mt-1 text-sm">
                                             Product ID: {item.productId}
                                           </p>
                                         </div>
                                         <div>
-                                          <p className="text-theme-body-soft text-xs font-semibold uppercase tracking-[0.18em]">
+                                          <p className="text-white/70 text-xs font-semibold uppercase tracking-[0.18em]">
                                             Weight
                                           </p>
                                           <p className="text-theme-strong mt-2 text-sm font-medium">
@@ -599,7 +599,7 @@ const AdminDashboardPage = () => {
                                           </p>
                                         </div>
                                         <div>
-                                          <p className="text-theme-body-soft text-xs font-semibold uppercase tracking-[0.18em]">
+                                          <p className="text-white/70 text-xs font-semibold uppercase tracking-[0.18em]">
                                             Qty
                                           </p>
                                           <p className="text-theme-strong mt-2 text-sm font-medium">
@@ -607,7 +607,7 @@ const AdminDashboardPage = () => {
                                           </p>
                                         </div>
                                         <div>
-                                          <p className="text-theme-body-soft text-xs font-semibold uppercase tracking-[0.18em]">
+                                          <p className="text-white/70 text-xs font-semibold uppercase tracking-[0.18em]">
                                             Line Total
                                           </p>
                                           <p className="text-theme-heading mt-2 text-sm font-semibold">
@@ -624,7 +624,7 @@ const AdminDashboardPage = () => {
                                     <p className="text-theme-heading text-sm font-semibold uppercase tracking-[0.22em]">
                                       Customer
                                     </p>
-                                    <div className="text-theme-body mt-4 space-y-3 text-sm leading-7">
+                                    <div className="text-white/75 mt-4 space-y-3 text-sm leading-7">
                                       <div>
                                         <p className="text-theme-strong font-semibold">{order.customer.name}</p>
                                         <p>{order.customer.phone}</p>
@@ -640,7 +640,7 @@ const AdminDashboardPage = () => {
                                     <p className="text-theme-heading text-sm font-semibold uppercase tracking-[0.22em]">
                                       Totals
                                     </p>
-                                    <div className="text-theme-body mt-4 space-y-3 text-sm">
+                                    <div className="text-white/75 mt-4 space-y-3 text-sm">
                                       <div className="flex items-center justify-between gap-4">
                                         <span>Subtotal</span>
                                         <span className="text-theme-strong font-semibold">
@@ -661,7 +661,7 @@ const AdminDashboardPage = () => {
                                       </div>
                                       <div className="flex items-center justify-between gap-4 border-t border-mint/10 pt-3">
                                         <span className="text-theme-strong font-semibold">Placed on</span>
-                                        <span className="text-theme-body text-right">
+                                        <span className="text-white/75 text-right">
                                           {formatDateTime(order.createdAt)}
                                         </span>
                                       </div>

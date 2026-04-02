@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { useProductsQuery } from "@/lib/api";
+import { useProductsQuery, getDbProductId } from "@/lib/api";
 import { useStockQuery, useUpdateStockMutation } from "@/lib/api";
 import { CheckCircle, AlertCircle, Loader2, Package, ToggleLeft, ToggleRight, Eye } from "lucide-react";
 
@@ -60,8 +60,9 @@ export const AdminStockToggle = () => {
         ) : (
           <div className="space-y-3">
             {products.map((product, index) => {
-              const isAvailable = stockData.get(product.id) ?? true;
-              const isUpdating = updating === product.id;
+              const dbProductId = getDbProductId(Number(product.id), product.name);
+              const isAvailable = stockData.get(dbProductId) ?? true;
+              const isUpdating = updating === dbProductId;
 
               return (
                 <motion.div
@@ -113,7 +114,7 @@ export const AdminStockToggle = () => {
 
                     {/* Toggle Button */}
                     <motion.button
-                      onClick={() => handleToggleStock(product.id, isAvailable)}
+                      onClick={() => handleToggleStock(dbProductId, isAvailable)}
                       disabled={isUpdating}
                       whileHover={{ scale: isUpdating ? 1 : 1.05 }}
                       whileTap={{ scale: isUpdating ? 1 : 0.95 }}

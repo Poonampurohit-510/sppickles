@@ -1,16 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { Filter } from "lucide-react";
 import PrimaryButton from "@/components/PrimaryButton";
 import ProductCard from "@/components/ProductCard";
 import Seo from "@/components/Seo";
 import SkeletonCard from "@/components/SkeletonCard";
+import { FilterPanel, type FilterOptions } from "@/components/FilterPanel";
 import { useStore } from "@/components/StoreProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 import { content } from "@/content/translations";
 import { type StoreFilter } from "@/data/site";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useToast } from "@/hooks/use-toast";
+import { useSearchFilter } from "@/hooks/useSearchFilter";
 import { useStockQuery, getDbProductId } from "@/lib/api";
 
 type ProductsPageProps = {
@@ -108,6 +111,14 @@ const ProductsPage = ({ initialFilter = "all" }: ProductsPageProps) => {
   );
 
   const [selectedFilter, setSelectedFilter] = useState<StoreFilter>(initialFilter);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showFilters, setShowFilters] = useState(!isMobile);
+  const [filters, setFilters] = useState<FilterOptions>({
+    categories: [],
+    priceRange: [0, Infinity],
+    subcategories: [],
+    sortBy: "newest",
+  });
   const [heroIndex, setHeroIndex] = useState(0);
   const gridRef = useRef<HTMLDivElement | null>(null);
 
@@ -137,7 +148,8 @@ const ProductsPage = ({ initialFilter = "all" }: ProductsPageProps) => {
     [products],
   );
 
-  const visibleProducts = useMemo(
+  // Get visible products based on category filter first
+  const categoryFilteredProducts = useMemo(
     () =>
       products.filter((product) => {
         if (selectedFilter === "all") return true;
@@ -148,6 +160,9 @@ const ProductsPage = ({ initialFilter = "all" }: ProductsPageProps) => {
       }),
     [products, selectedFilter],
   );
+
+  // Apply search and filter to category-filtered products
+  const visibleProducts = useSearchFilter(categoryFilteredProducts, searchQuery, filters);
 
   const tabs: Array<{ key: StoreFilter; label: string; count: number }> = [
     { key: "all", label: t.products.allProducts, count: productCounts.all },
@@ -452,6 +467,39 @@ const ProductsPage = ({ initialFilter = "all" }: ProductsPageProps) => {
           </div>
         ) : visibleProducts.length > 0 ? (
           <div ref={gridRef} className="space-y-6">
+            {/* Search and Filter Bar */}
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-6">
+              {/* Search Bar - takes full width on mobile, 1fr on desktop */}
+              <div className="flex-1">
+                <SearchBarWithState 
+                  onSearchChange={setSearchQuery}
+                  placeholder={isTe ? "పచ్చళ్ళు, పరిమాణం వెతకండి..." : "Search pickles, size..."}
+                />
+              </div>
+
+              {/* Filter Button - mobile only */}
+              {isMobile && (
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center gap-2 rounded-xl bg-south-green text-white px-4 py-3 font-semibold self-end"
+                >
+                  <Filter className="h-5 w-5" />
+                  {isTe ? "ఫిల్టర్‌లు" : "Filters"}
+                </motion.button>
+              )}
+            </div>
+
+            {/* Filters Panel - desktop: always visible; mobile: toggle */}
+            {showFilters && (
+              <FilterPanel 
+                filters={filters}
+                onFiltersChange={setFilters}
+                onClose={isMobile ? () => setShowFilters(false) : undefined}
+              />
+            )}
+
             {/* Toolbar bar — product count + live indicator */}
             <div className="flex flex-col gap-3 rounded-2xl border border-[#d8e5d8]/60 bg-white px-5 py-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -580,5 +628,64 @@ const ProductsPage = ({ initialFilter = "all" }: ProductsPageProps) => {
     </main>
   );
 };
+
+// Simple wrapper for search bar with state management
+function SearchBarWithState({ 
+  onSearchChange, 
+  placeholder 
+}: { 
+  onSearchChange: (query: string) => void;
+  placeholder?: string;
+}) {
+  const [query, setQuery] = useState("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setQuery(value);
+    onSearchChange(value);
+  };
+
+  const handleClear = () => {
+    setQuery("");
+    onSearchChange("");
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      className="relative flex items-center gap-3 rounded-2xl px-4 py-3 bg-white border-2 border-south-green/20 hover:border-south-green/50 transition-all duration-300 focus-within:border-south-green focus-within:shadow-[0_8px_32px_rgba(30,79,46,0.15)]"
+    >
+      <svg className="h-5 w-5 text-south-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+
+      <input
+        type="text"
+        value={query}
+        onChange={handleChange}
+        placeholder={placeholder || "Search products..."}
+        className="flex-1 border-0 bg-transparent outline-none text-theme-heading placeholder:text-theme-body/40 font-medium"
+      />
+
+      {query && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          type="button"
+          onClick={handleClear}
+          className="p-1 hover:bg-[#f2f7f2] rounded-lg transition-colors"
+          aria-label="Clear search"
+        >
+          <svg className="h-5 w-5 text-theme-body/60 hover:text-south-green" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+          </svg>
+        </motion.button>
+      )}
+    </motion.div>
+  );
+}
 
 export default ProductsPage;

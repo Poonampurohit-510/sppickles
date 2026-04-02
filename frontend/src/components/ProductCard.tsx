@@ -1,12 +1,13 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertCircle, Minus, Plus, ShoppingCart } from "lucide-react";
+import { AlertCircle, Minus, Plus, ShoppingCart, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { type ProductRecord, type WeightOption, weightOptions } from "@/data/site";
 import { content, getWeightLabel } from "@/content/translations";
 import { calculateWeightPrice, formatCurrency } from "@/lib/pricing";
 import { useStore } from "@/components/StoreProvider";
 import { useLanguage } from "@/components/LanguageProvider";
+import { ProgressiveImage } from "@/components/LazyImage";
 
 type ProductCardProps = {
   product: ProductRecord;
@@ -21,10 +22,20 @@ const ProductCard = ({ product, index = 0, isAvailable = true, compact = false }
   const { language } = useLanguage();
 
   const [weight, setWeight] = useState<WeightOption>("250g");
-
-  // Quantity stored as string so the input is fully editable inline
   const [quantityStr, setQuantityStr] = useState("1");
+  const [showQuickAdd, setShowQuickAdd] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
   const quantity = Math.max(1, parseInt(quantityStr, 10) || 1);
+
+  // Mock stock levels (in production, this would come from backend)
+  const stockLevels: Record<string, number> = {
+    "product-1-chintakaya-thokku": 8,
+    "product-2-usiri-thokku": 3,
+    "product-3-gongura-salt": 12,
+  };
+  
+  const stockLevel = stockLevels[product.slug || `product-${product.id}`] || 15;
+  const isLowStock = stockLevel <= 5 && isAvailable;
 
   const productCardCopy = content[language].productCard;
   const categoryCopy = content[language].categories[product.category];
@@ -111,12 +122,10 @@ const ProductCard = ({ product, index = 0, isAvailable = true, compact = false }
 
       {/* ── IMAGE ── */}
       <div className="relative overflow-hidden bg-[#f2f7f2]">
-        <motion.img
+        <ProgressiveImage
           src={product.image}
           alt={displayName}
-          loading="lazy"
-          whileHover={{ scale: 1.06 }}
-          transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
+          placeholderSrc={`${product.image}?w=20&blur=20`}
           className="aspect-[4/3.2] w-full object-cover mix-blend-multiply"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
@@ -128,12 +137,17 @@ const ProductCard = ({ product, index = 0, isAvailable = true, compact = false }
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ type: "spring", stiffness: 500, damping: 30, delay: 0.1 }}
               className="absolute right-3.5 top-3.5 z-20 flex items-center gap-1.5
-                rounded-full border border-[#ffc4c4] bg-[#fff0f0]/95 backdrop-blur-md px-2.5 py-1 shadow-sm"
+                rounded-full border border-[#ffc4c4] bg-[#fff0f0]/95 backdrop-blur-md px-2.5 py-1 shadow-sm
+                animate-pulse"
             >
-              <span className="relative flex h-1.5 w-1.5 shrink-0">
+              <motion.span 
+                className="relative flex h-1.5 w-1.5 shrink-0"
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#d01515] opacity-70" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#d01515]" />
-              </span>
+              </motion.span>
               <span className="text-[9px] font-black uppercase tracking-[0.18em] text-[#9a1111]">
                 {featuredCopy.bestSeller}
               </span>
@@ -147,6 +161,16 @@ const ProductCard = ({ product, index = 0, isAvailable = true, compact = false }
               <AlertCircle className="h-3 w-3" />
               {productCardCopy.outOfStock}
             </span>
+          )}
+          {isAvailable && isLowStock && (
+            <motion.span 
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="flex items-center gap-1 rounded-full bg-[#ff9800]/90 backdrop-blur-md px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.15em] text-white shadow-sm"
+            >
+              <TrendingUp className="h-3 w-3" />
+              Only {stockLevel} left
+            </motion.span>
           )}
           <span className={`flex items-center rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.18em] shadow-sm backdrop-blur-md ${categoryPillClass}`}>
             {categoryCopy.label}
@@ -206,10 +230,10 @@ const ProductCard = ({ product, index = 0, isAvailable = true, compact = false }
             </div>
 
             {/* Total + Qty block */}
-            <div className="rounded-xl border border-[#dce8dc] bg-[#f8fbf8] overflow-hidden">
+            <div className="rounded-xl border border-south-green/20 bg-gradient-to-br from-[#f8fbf8] via-[#f2f7f2] to-[#eaf3ea] overflow-hidden shadow-[inset_0_1px_3px_rgba(30,79,46,0.08)]">
 
               {/* Total row */}
-              <div className="flex items-baseline justify-between px-3 pt-2.5 pb-2 border-b border-[#dce8dc]">
+              <div className="flex items-baseline justify-between px-3 pt-2.5 pb-2 border-b border-south-green/15 bg-gradient-to-r from-transparent to-south-green/5">
                 <p className="text-[9px] font-black uppercase tracking-[0.22em] text-theme-body/50">
                   {language === "te" ? "మొత్తం" : "Total"}
                 </p>
@@ -220,7 +244,7 @@ const ProductCard = ({ product, index = 0, isAvailable = true, compact = false }
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 4 }}
                     transition={{ duration: 0.16 }}
-                    className="price-figure text-[1.35rem] font-extrabold tracking-tight text-theme-heading leading-none tabular-nums"
+                    className="price-figure text-[2.1rem] sm:text-[1.75rem] font-extrabold tracking-tight text-south-green leading-none tabular-nums"
                   >
                     {formatCurrency(livePrice * quantity)}
                   </motion.p>
@@ -266,20 +290,27 @@ const ProductCard = ({ product, index = 0, isAvailable = true, compact = false }
             </div>
 
             {/* Add to Cart — deep green, single line */}
-            <button
+            <motion.button
               type="button"
               onClick={handleAddToCart}
               disabled={!isAvailable}
-              className={`flex w-full items-center justify-center gap-2.5 rounded-xl py-3 text-[13px] font-bold tracking-wide
-                transition-all duration-200 active:scale-[0.97]
+              whileHover={{ scale: isAvailable ? 1.02 : 1 }}
+              whileTap={{ scale: isAvailable ? 0.98 : 1 }}
+              className={`flex w-full items-center justify-center gap-3 rounded-xl py-3.5 text-[14px] font-bold tracking-wide
+                transition-all duration-200
                 ${!isAvailable
-                  ? "bg-[#c8deca] text-white/60 cursor-not-allowed shadow-none"
-                  : "bg-[#1a5c2a] text-white shadow-[0_6px_20px_rgba(26,92,42,0.25)] hover:bg-[#163f1e] hover:shadow-[0_8px_24px_rgba(26,92,42,0.32)]"
+                  ? "bg-gradient-to-r from-[#c8deca] to-[#bdd5c1] text-white/60 cursor-not-allowed shadow-none"
+                  : "bg-gradient-to-r from-[#1a5c2a] to-[#0f3d1c] text-white shadow-[0_6px_20px_rgba(26,92,42,0.25)] hover:from-[#163f1e] hover:to-[#0b2c15] hover:shadow-[0_8px_28px_rgba(26,92,42,0.35)]"
                 }`}
             >
-              <ShoppingCart className="h-4 w-4 shrink-0" />
+              <motion.div
+                animate={isAvailable ? { y: [0, -2, 0] } : {}}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <ShoppingCart className="h-5 w-5 shrink-0" />
+              </motion.div>
               {isAvailable ? productCardCopy.addToCart : productCardCopy.outOfStock}
-            </button>
+            </motion.button>
           </div>
         ) : (
           /* ── COMPACT CARD ── */
@@ -324,7 +355,7 @@ const ProductCard = ({ product, index = 0, isAvailable = true, compact = false }
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -4, scale: 1.02 }}
                     transition={{ duration: 0.18, ease: "easeOut" }}
-                    className="price-figure relative z-10 truncate text-[1.82rem] font-extrabold tracking-tight text-south-red tabular-nums leading-none drop-shadow-[0_4px_14px_rgba(153,27,27,0.12)]"
+                    className="price-figure relative z-10 truncate text-[2.4rem] sm:text-[2.2rem] font-extrabold tracking-tight text-south-red tabular-nums leading-none drop-shadow-[0_4px_14px_rgba(153,27,27,0.12)]"
                   >
                     {formatCurrency(livePrice)}
                   </motion.p>
@@ -354,6 +385,78 @@ const ProductCard = ({ product, index = 0, isAvailable = true, compact = false }
             </div>
           </div>
         )}
+
+        {/* Quick Add Modal Overlay */}
+        <AnimatePresence>
+          {showQuickAdd && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm rounded-[1.75rem]"
+              onClick={() => setShowQuickAdd(false)}
+            >
+              <motion.div
+                className="bg-white rounded-2xl p-6 shadow-2xl max-w-[90vw] w-full"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h3 className="text-lg font-bold text-theme-heading mb-4">{displayName}</h3>
+                <p className="text-sm text-theme-body mb-4">{categoryCopy.label}</p>
+                
+                <div className="space-y-4">
+                  {/* Quick weight selector */}
+                  <div>
+                    <p className="text-xs font-bold uppercase mb-2">Quick Select</p>
+                    <div className="grid grid-cols-3 gap-2">
+                      {weightOptions.map((opt) => (
+                        <button
+                          key={opt.label}
+                          onClick={() => setWeight(opt.label)}
+                          className={`p-2 rounded-lg text-xs font-bold ${
+                            weight === opt.label
+                              ? "bg-south-green text-white"
+                              : "bg-gray-100 hover:bg-gray-200"
+                          }`}
+                        >
+                          {getWeightLabel(language, opt.label)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Quick price display */}
+                  <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-3 text-center">
+                    <p className="text-xs text-theme-body/70">Price</p>
+                    <p className="text-2xl font-bold text-south-green">{formatCurrency(livePrice)}</p>
+                  </div>
+
+                  {/* Quick add buttons */}
+                  <div className="flex gap-2">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        handleAddToCart();
+                        setShowQuickAdd(false);
+                      }}
+                      className="flex-1 bg-south-green text-white py-2 rounded-lg font-bold"
+                    >
+                      Add to Cart
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      onClick={() => setShowQuickAdd(false)}
+                      className="flex-1 bg-gray-200 text-theme-heading py-2 rounded-lg font-bold"
+                    >
+                      Cancel
+                    </motion.button>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.article>
   );
