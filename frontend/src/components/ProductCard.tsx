@@ -203,10 +203,10 @@ const ProductCard = ({ product, index = 0, isAvailable = true, compact = false }
 
             {/* Pack size — grid-cols-3 so all 3 pills always visible */}
             <div className="space-y-1.5">
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-south-green/85">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#0f3d1c]">
                 {productCardCopy.weight}
               </p>
-              <div className="grid grid-cols-3 gap-1 rounded-xl bg-[#f4f9f4] p-1 border border-[#dce8dc]">
+              <div className="grid grid-cols-3 gap-1 rounded-xl bg-white p-1 border border-[#dce8dc]">
                 {weightOptions.map((option) => (
                   <button
                     key={option.label}
@@ -215,12 +215,12 @@ const ProductCard = ({ product, index = 0, isAvailable = true, compact = false }
                     className={`min-w-0 truncate rounded-lg py-2.5 text-[12px] font-bold
                       transition-all duration-200 text-center leading-none
                       ${weight === option.label
-                        ? "border border-[#d7b15b] bg-[#fff3c9] !text-[#173d1c] font-extrabold shadow-[0_8px_18px_rgba(201,139,0,0.14)]"
-                        : "text-[#1f4125] hover:text-[#1a5c2a] hover:bg-[#eaf3ea]"
+                        ? "border border-[#d7b15b] bg-[#fff3c9] !text-[#0f2810] font-extrabold shadow-[0_8px_18px_rgba(201,139,0,0.14)]"
+                        : "text-[#0f2810] hover:text-[#0a1c0e] hover:bg-[#f0f5f2] border border-[#e0e8e3]"
                       }`}
                   >
                     <span
-                      className={weight === option.label ? "text-[#173d1c]" : "text-[#1f4125]"}
+                      className={weight === option.label ? "text-[#0f2810]" : "text-[#0f2810]"}
                     >
                       {getWeightLabel(language, option.label)}
                     </span>
@@ -327,8 +327,8 @@ const ProductCard = ({ product, index = 0, isAvailable = true, compact = false }
                     onClick={() => setWeight(option.label)}
                     className={`min-w-0 truncate rounded-lg border py-3 text-[12px] font-bold leading-none transition-all duration-200
                       ${weight === option.label
-                        ? "scale-[1.03] border-[#d7b15b] bg-[#fff3c9] !text-[#173d1c] shadow-[0_10px_22px_rgba(201,139,0,0.16),0_0_0_2px_rgba(246,196,67,0.16)]"
-                        : "border-transparent text-[#1f4125] hover:bg-[#eaf3ea] hover:text-[#1a5c2a] hover:shadow-[0_3px_10px_rgba(26,92,42,0.08)]"
+                        ? "scale-[1.03] border-[#d7b15b] bg-[#fff3c9] !text-[#0f2810] shadow-[0_10px_22px_rgba(201,139,0,0.16),0_0_0_2px_rgba(246,196,67,0.16)]"
+                        : "border-[#dce8dc] text-[#0f2810] bg-white hover:bg-[#eaf3ea] hover:text-[#0a1c0e] hover:shadow-[0_3px_10px_rgba(26,92,42,0.08)]"
                       }`}
                   >
                     <span
@@ -345,7 +345,7 @@ const ProductCard = ({ product, index = 0, isAvailable = true, compact = false }
               <div className="relative min-w-0 overflow-hidden rounded-xl border border-[#ecd68f] bg-[linear-gradient(135deg,#fffef6_0%,#f4faf3_46%,#fff0c9_100%)] px-3.5 py-3 shadow-[0_12px_26px_rgba(201,139,0,0.12),0_8px_18px_rgba(26,92,42,0.06)]">
                 <div className="pointer-events-none absolute -right-5 -top-5 h-16 w-16 rounded-full bg-[#f6c443]/30 blur-2xl" />
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-[linear-gradient(90deg,rgba(201,139,0,0)_0%,rgba(201,139,0,0.65)_50%,rgba(201,139,0,0)_100%)]" />
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-south-green/80 mb-1">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#0f3d1c] mb-1">
                   {productCardCopy.price}
                 </p>
                 <AnimatePresence mode="popLayout">
@@ -427,8 +427,8 @@ const ProductCard = ({ product, index = 0, isAvailable = true, compact = false }
 
                   {/* Quick price display */}
                   <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-3 text-center">
-                    <p className="text-xs text-theme-body/70">Price</p>
-                    <p className="text-2xl font-bold text-south-green">{formatCurrency(livePrice)}</p>
+                    <p className="text-xs font-bold text-[#1a3a2a]">Price</p>
+                    <p className="text-2xl font-bold text-[#0f3d1c]">{formatCurrency(livePrice)}</p>
                   </div>
 
                   {/* Quick add buttons */}
