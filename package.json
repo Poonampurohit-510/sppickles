@@ -9,6 +9,7 @@
     "dev:backend": "cd backend && npm run dev",
     "build:frontend": "vite build",
     "build:backend": "echo 'Backend does not require building'",
+    "preview": "vite preview",
     "install:all": "npm install && cd backend && npm install",
     "lint": "eslint .",
     "type-check": "tsc -b"
